@@ -5,8 +5,11 @@ node_modules/
 .env.*
 !.env.example
 *.log
-uploads/
-storage/
+/uploads/
+api/var/uploads/
+/storage/
+/api/storage/
+api/var/
 coverage/
 .turbo/
 *.tsbuildinfo
