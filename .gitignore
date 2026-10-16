@@ -1,0 +1,13 @@
+node_modules/
+.next/
+.next-build/
+.env
+.env.*
+!.env.example
+*.log
+uploads/
+storage/
+coverage/
+.turbo/
+*.tsbuildinfo
+api/.env.local-backup

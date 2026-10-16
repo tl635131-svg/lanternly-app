@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="256" height="256" role="img" aria-label="Hearth &amp; Hour symbol">
+<g>
+  <path d="M18 40 A14 14 0 0 1 46 40 Z" fill="#B85A35"/>
+  <path d="M10.2 40 A21.8 21.8 0 0 1 47.4 24.6" fill="none" stroke="#24402F" stroke-width="3.4" stroke-linecap="round"/>
+  <circle cx="51.6" cy="31.2" r="3.1" fill="#24402F"/>
+  <rect x="6" y="44.5" width="52" height="3.4" rx="1.7" fill="#24402F"/>
+</g>
+</svg>

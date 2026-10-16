@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="256" height="256" role="img" aria-label="lanternly symbol">
+<defs><radialGradient id="lm-reverse" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#FFBE55" stop-opacity="0.55"/><stop offset="1" stop-color="#FFBE55" stop-opacity="0"/></radialGradient></defs>
+<g>
+  <path d="M25 11 A7 7 0 0 1 39 11" fill="none" stroke="#EDEBF8" stroke-width="3" stroke-linecap="round"/>
+  <rect x="22" y="12" width="20" height="5" rx="2.5" fill="#EDEBF8"/>
+  <rect x="16.5" y="19" width="31" height="36" rx="12" fill="none" stroke="#EDEBF8" stroke-width="3.2"/>
+  <circle cx="32" cy="37" r="14" fill="url(#lm-reverse)"/>
+  <circle cx="32" cy="37" r="6.5" fill="#FFBE55"/>
+  <rect x="24" y="57" width="16" height="3.2" rx="1.6" fill="#EDEBF8"/>
+</g>
+</svg>

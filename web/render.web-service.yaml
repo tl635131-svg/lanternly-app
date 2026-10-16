@@ -1,0 +1,29 @@
+# Reviewed web-service block, identical to the `lanternly-web` entry now in app/render.yaml (kept here for reference).
+# The repo root is app/, so rootDir is `web`. Nothing here is a secret.
+services:
+  - type: web
+    name: lanternly-web
+    runtime: node
+    plan: free
+    rootDir: web
+    buildCommand: npm ci --include=dev && npm run build
+    # npm start = next start -H 0.0.0.0 -p ${PORT:-3000}. web/lib/server-env.ts turns API_HOST into https://API_HOST at
+    # request time; an API_ORIGIN set in the Dashboard wins (e.g. https://lanternly-api.onrender.com or a custom domain).
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production
+      # The API's public hostname. Free web services can't receive private-network traffic, so the web reaches the
+      # API over https. On a paid plan you could use `property: hostport` instead and set API_ORIGIN from it.
+      - key: API_HOST
+        fromService:
+          name: lanternly-api
+          type: web
+          envVarKey: RENDER_EXTERNAL_HOSTNAME
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      # PUBLIC_BASE_URL is optional: the web falls back to RENDER_EXTERNAL_URL, which Render sets on every web service.

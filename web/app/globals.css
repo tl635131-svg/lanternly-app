@@ -1,0 +1,140 @@
+@import "tailwindcss";
+@import "./ds.css";
+@import "./invite.css";
+
+/*
+ * Tailwind token mapping. Values come from CSS variables generated from
+ * theme/brand.ts (injected in app/layout.tsx). Do not put raw colours here;
+ * edit theme/brand.ts instead.
+ */
+@theme inline {
+  --color-canvas: var(--brand-canvas);
+  --color-surface: var(--brand-surface);
+  --color-surface-2: var(--brand-surface2);
+  --color-surface-raised: var(--brand-surface-raised);
+  --color-line: var(--brand-line);
+  --color-border-strong: var(--brand-border-strong);
+  --color-ink-subtle: var(--brand-ink-subtle);
+  --color-night-raised: var(--brand-night-raised);
+  --color-on-night-muted: var(--brand-on-night-muted);
+  --color-focus-halo: var(--brand-focus-halo);
+  --color-info: var(--brand-info);
+  --color-info-soft: var(--brand-info-soft);
+  --color-rsvp-attending: var(--brand-rsvp-attending);
+  --color-rsvp-attending-soft: var(--brand-rsvp-attending-soft);
+  --color-rsvp-declined: var(--brand-rsvp-declined);
+  --color-rsvp-declined-soft: var(--brand-rsvp-declined-soft);
+  --color-rsvp-pending: var(--brand-rsvp-pending);
+  --color-rsvp-pending-soft: var(--brand-rsvp-pending-soft);
+  --color-rsvp-maybe: var(--brand-rsvp-maybe);
+  --color-rsvp-maybe-soft: var(--brand-rsvp-maybe-soft);
+  --color-ink: var(--brand-ink);
+  --color-muted: var(--brand-muted);
+  --color-primary: var(--brand-primary);
+  --color-primary-hover: var(--brand-primary-hover);
+  --color-on-primary: var(--brand-on-primary);
+  --color-accent: var(--brand-accent);
+  --color-on-accent: var(--brand-on-accent);
+  --color-accent-text: var(--brand-accent-text);
+  --color-tint: var(--brand-tint);
+  --color-night: var(--brand-night);
+  --color-on-night: var(--brand-on-night);
+  --color-glow: var(--brand-glow);
+  --color-focus: var(--brand-focus);
+  --color-success: var(--brand-success);
+  --color-success-soft: var(--brand-success-soft);
+  --color-danger: var(--brand-danger);
+  --color-danger-soft: var(--brand-danger-soft);
+  --color-warning: var(--brand-warning);
+  --color-warning-soft: var(--brand-warning-soft);
+
+  --font-sans: var(--brand-font-body);
+  --font-display: var(--brand-font-display);
+
+  --radius-xs: var(--brand-radius-xs);
+  --radius-sm: var(--brand-radius-sm);
+  --radius-md: var(--brand-radius-md);
+  --radius-lg: var(--brand-radius-card);
+  --radius-card: var(--brand-radius-card);
+  --radius-xl: var(--brand-radius-xl);
+  --radius-2xl: var(--brand-radius-2xl);
+
+  /* type scale (design/tokens.json) — nothing in the UI goes below caption/overline (12px) */
+  --text-caption: 12.5px;
+  --text-caption--line-height: 1.4;
+  --text-overline: 12px;
+  --text-overline--line-height: 1.2;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 1.5;
+  --text-body: 16px;
+  --text-body--line-height: 1.55;
+  --text-h3: 20px;
+  --text-h3--line-height: 1.3;
+  --text-h2: 26px;
+  --text-h2--line-height: 1.2;
+  --text-h1: 34px;
+  --text-h1--line-height: 1.15;
+
+  --ease-standard: cubic-bezier(.2,0,0,1);
+  --ease-enter: cubic-bezier(.16,1,.3,1);
+
+  --shadow-raised: var(--brand-shadow-raised);
+  --shadow-glow-night: var(--brand-shadow-glow-night);
+  --shadow-card: var(--brand-shadow-card);
+  --shadow-pop: var(--brand-shadow-pop);
+  --shadow-glow: var(--brand-shadow-glow);
+}
+
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--brand-canvas);
+  color: var(--brand-ink);
+  font-family: var(--brand-font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "tnum" 0;
+}
+.font-display { font-weight: var(--brand-display-weight); letter-spacing: var(--brand-display-tracking); text-wrap: balance; }
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* Consistent, visible keyboard focus everywhere */
+:focus-visible {
+  outline: 2px solid var(--brand-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--brand-focus-halo) 55%, transparent);
+}
+/* on dark surfaces the solid ring flips to the halo colour so it stays visible */
+.on-night :focus-visible, .inv :focus-visible {
+  outline-color: var(--brand-focus-halo);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--brand-focus-halo) 35%, transparent);
+}
+
+.skip-link { position: absolute; left: -9999px; top: 8px; z-index: 100; }
+.skip-link:focus { left: 8px; }
+
+@keyframes shimmer { 0% { background-position: -400px 0 } 100% { background-position: 400px 0 } }
+.skeleton {
+  background: linear-gradient(90deg, var(--brand-surface2) 0px, var(--brand-surface) 80px, var(--brand-surface2) 160px);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: var(--brand-radius-sm);
+}
+@keyframes fade-up { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
+.reveal { animation: fade-up .7s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes flash { from { background: color-mix(in srgb, var(--brand-accent) 28%, transparent) } to { background: transparent } }
+.flash { animation: flash 2.2s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* M-08: extends a small control's hit area to at least 44×44 without changing its look. */
+.tap-44 { position: relative; }
+.tap-44::after { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 44px); height: max(100%, 44px); transform: translate(-50%, -50%); }

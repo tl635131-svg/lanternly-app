@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.test
+var/
+coverage/
+backups/
+
+.env*
+!.env.example
+*.dump

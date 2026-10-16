@@ -1,0 +1,70 @@
+{
+  "name": "@digital-invite/api",
+  "version": "0.1.0",
+  "description": "Back end API for the digital invitation platform",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/server.ts",
+    "start": "tsx src/server.ts",
+    "build": "prisma generate && tsc -p tsconfig.build.json",
+    "start:prod": "node dist/src/server.js",
+    "start:render": "sh scripts/render-start.sh",
+    "db:seed:if-empty": "tsx scripts/seed-if-empty.ts",
+    "worker": "tsx src/worker.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:migrate": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "prisma migrate reset --force",
+    "db:studio": "prisma studio",
+    "openapi": "tsx scripts/export-openapi.ts",
+    "db:test:reset": "DATABASE_URL=postgresql://digital_invite:devpassword@localhost:5432/digital_invite_test?schema=public prisma migrate reset --force --skip-seed",
+    "contract": "tsx scripts/gen-contract.ts",
+    "contract:check": "tsx scripts/gen-contract.ts --check"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@fastify/cookie": "^11.1.3",
+    "@fastify/cors": "^11.3.1",
+    "@fastify/helmet": "^13.2.0",
+    "@fastify/multipart": "^10.1.4",
+    "@fastify/rate-limit": "^11.2.1",
+    "@fastify/swagger": "^9.9.2",
+    "@fastify/swagger-ui": "^6.1.2",
+    "@node-rs/argon2": "^2.2.2",
+    "@prisma/client": "^6.19.3",
+    "dotenv": "^18.0.8",
+    "exceljs": "^4.4.0",
+    "fastify": "^5.12.7",
+    "fastify-type-provider-zod": "^7.0.0",
+    "qrcode": "^1.5.4",
+    "stripe": "^23.0.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@types/qrcode": "^1.5.6",
+    "pino-pretty": "^13.2.0",
+    "prisma": "^6.19.3",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.12"
+  },
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "overrides": {
+    "exceljs": {
+      "uuid": "^11.1.1"
+    },
+    "@prisma/config": {
+      "deepmerge-ts": "^8.0.2"
+    }
+  }
+}

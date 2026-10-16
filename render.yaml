@@ -1,0 +1,117 @@
+# ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+# Lanternly — Render Blueprint (free plan demo). This file lives at the root of the `app/` repo (api/ + web/).
+# Deploy: Render Dashboard → New → Blueprint → pick the repo. Nothing here contains a secret: secrets are generated
+# by Render (`generateValue`) and shown in each service's Environment tab.
+#
+# DEMO ONLY: payments are MOCK (nothing is charged) and email is CONSOLE (nothing is sent). The API refuses to start
+# in production with those unless ALLOW_MOCK_PROVIDERS_IN_PRODUCTION=true (set below) and logs a loud banner.
+#
+# Free-plan limits (see api/README.md "Deploy to Render"): services sleep after 15 min idle (~1 min cold start, and the
+# web's first proxied call also wakes the API); the free Postgres expires 30 days after creation; uploads go to the
+# local disk, which is wiped on every restart/redeploy/spin-down; free web services can't receive private-network
+# traffic, so the web reaches the API over its public https URL.
+# ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+databases:
+  - name: lanternly-db
+    plan: free
+    databaseName: lanternly
+    user: lanternly
+    postgresMajorVersion: "16"
+
+services:
+  # ── API (Fastify + Prisma) ───────────────────────────────────────────────────────────────────────────────
+  - type: web
+    name: lanternly-api
+    runtime: node
+    plan: free
+    rootDir: api
+    # devDependencies (prisma CLI, typescript) are needed to build and to run `prisma migrate deploy` at start.
+    buildCommand: npm ci --include=dev && npm run build
+    # No preDeployCommand on the free plan: scripts/render-start.sh runs `prisma migrate deploy`, then the demo seed
+    # only if the database has no users, then `exec node dist/src/server.js` (binds 0.0.0.0:$PORT).
+    startCommand: npm run start:render
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lanternly-db
+          property: connectionString
+      # Signs session cookies, CSRF tokens, file URLs and unsubscribe links (the API uses one secret for all of these).
+      - key: APP_SECRET
+        generateValue: true
+      # Password for every seeded demo login (admin@, designer@, host@, partner@, diy@example.com). Read it in the
+      # Render Dashboard → lanternly-api → Environment. Only used when the database is empty (first start).
+      - key: DEMO_PASSWORD
+        generateValue: true
+      # The web app's public hostname → WEB_URL=https://<host>, INVITE_BASE_URL=https://<host>/i, CORS_ORIGINS=https://<host>.
+      # API_PUBLIC_URL defaults to Render's RENDER_EXTERNAL_URL for this service. Set WEB_URL / API_PUBLIC_URL explicitly
+      # (e.g. for a custom domain) and they win.
+      - key: WEB_HOST
+        fromService:
+          name: lanternly-web
+          type: web
+          envVarKey: RENDER_EXTERNAL_HOSTNAME
+      # Cookies are set through the web app's /api proxy, so they are host-only on the web domain. Leave COOKIE_DOMAIN
+      # unset: onrender.com is a public suffix and a cookie domain there is rejected by browsers.
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: TRUST_PROXY
+        value: "true"
+      - key: PAYMENT_DRIVER
+        value: mock
+      - key: EMAIL_DRIVER
+        value: console
+      - key: ALLOW_MOCK_PROVIDERS_IN_PRODUCTION
+        value: "true"
+      - key: STORAGE_DRIVER
+        value: local
+      - key: STORAGE_LOCAL_DIR
+        value: ./var/uploads
+      - key: DEV_ROUTES_ENABLED
+        value: "false"
+      - key: RUN_WORKER_IN_PROCESS
+        value: "true"
+      - key: FEATURE_OWN_SONG
+        value: "true"
+      - key: SEED_SAMPLE_REVIEWS
+        value: "true"
+      - key: LOG_LEVEL
+        value: info
+
+  # ── Web (Next.js) ────────────────────────────────────────────────────────────────────────────────────────
+  # FRONTEND BUILDER: the web reads these at request time (web/lib/server-env.ts):
+  #   API_ORIGIN       where /api/* and /health are forwarded. Must be the API's PUBLIC https URL: free web services
+  #                    can't receive private-network traffic, and a bare host would get http:// (onrender redirects
+  #                    http→https, which breaks proxied POSTs). Render can't interpolate "https://" + host in YAML, so
+  #                    the web derives it from API_HOST (a bare hostname → https://API_HOST). If API_HOST doesn't
+  #                    resolve, set API_ORIGIN in the Dashboard (e.g. https://lanternly-api.onrender.com); it wins.
+  #   PUBLIC_BASE_URL  optional; falls back to RENDER_EXTERNAL_URL (set by Render).
+  # `npm start` = `next start -H 0.0.0.0 -p ${PORT:-3000}`; health check is /healthz (does not wake the API).
+  - type: web
+    name: lanternly-web
+    runtime: node
+    plan: free
+    rootDir: web
+    buildCommand: npm ci --include=dev && npm run build
+    # web/lib/server-env.ts turns API_HOST into https://API_HOST at request time; an API_ORIGIN set in the Dashboard wins.
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production
+      - key: API_HOST
+        fromService:
+          name: lanternly-api
+          type: web
+          envVarKey: RENDER_EXTERNAL_HOSTNAME
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
